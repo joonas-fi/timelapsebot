@@ -164,7 +164,7 @@ func stillsTo5minBootstrap(state *TimelapseState) {
 }
 
 func stillsTo5min(state *TimelapseState) {
-	fiveMinVideoFilename := state.headFromState.Format("2006-01-02_03-04.avi")
+	fiveMinVideoFilename := state.headFromState.Format("2006-01-02_15-04.avi")
 
 	outFile := state.dir5min + "/" + fiveMinVideoFilename
 
@@ -229,7 +229,7 @@ func mergeVideosInternal(files []string, outFile string) {
 }
 
 func fiveMinsToHour(state *TimelapseState) {
-	hourVideoMerged := state.dirHour + "/" + state.headFromState.Format("2006-01-02_03.avi")
+	hourVideoMerged := state.dirHour + "/" + state.headFromState.Format("2006-01-02_15.avi")
 
 	log.Printf("fiveMinsToHour: %s -> %s", state.dir5min, hourVideoMerged)
 
