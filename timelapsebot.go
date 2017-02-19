@@ -285,15 +285,15 @@ func main() {
 
 	setRaspberryLed(false, &state)
 
-	for {
-		now := time.Now()
-		// in 5 seconds (TODO: this will drift a bit)
-		nextTickShouldBe := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second() + 5, 0, time.UTC)
-		nowAccordingToInternet := timeToLast5Mins(now)
+	nextTick := time.Now()
 
-		differentDay := nowAccordingToInternet.Day() != state.headFromState.Day()
-		differentHour := differentDay || nowAccordingToInternet.Hour() != state.headFromState.Hour()
-		different5Min := !nowAccordingToInternet.Equal(state.headFromState)
+	for {
+		// 16:54:13 => 16:50:00
+		tickCeiledTo5Minutes := timeToLast5Mins(nextTick)
+
+		differentDay := tickCeiledTo5Minutes.Day() != state.headFromState.Day()
+		differentHour := differentDay || tickCeiledTo5Minutes.Hour() != state.headFromState.Hour()
+		different5Min := !tickCeiledTo5Minutes.Equal(state.headFromState)
 
 		// TODO: have these run concurrently WRT takeStil(), so these periodical chores do not delay takeStill()
 		if different5Min {
@@ -318,12 +318,12 @@ func main() {
 			go runRestConcurrently()
 		}
 
-		// should run right after stillsTo5min() bootstrap (dir rename, new dir) is done
 		takeStill(&state)
 
-		state.headFromState = nowAccordingToInternet
+		state.headFromState = tickCeiledTo5Minutes
 
-		durationToNextTick := nextTickShouldBe.Sub(time.Now())
+		nextTick = nextTick.Add(5 * time.Second)
+		durationToNextTick := nextTick.Sub(time.Now())
 
 		if (durationToNextTick > 0) { // can be negative (if we're late) or 0
 			time.Sleep(durationToNextTick)
