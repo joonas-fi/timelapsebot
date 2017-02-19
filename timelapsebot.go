@@ -38,47 +38,6 @@ type TimelapseState struct {
 	dirDaily string
 }
 
-/*
-	LED support
-	-----------
-
-	Set LED to trigger on GPIO:
-
-	$ sudo su
-
-	Install WiringPi
-
-	$ git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
-
-	Test LED
-
-	$ gpio -g mode 16 output
-	$ gpio -g write 16 1 # off
-	$ gpio -g write 16 0 # on
-
-
-	To have avimerge
-	----------------
-
-	$ apt-get install -y transcode
-	$ avimerge -v
-	avimerge (transcode v1.1.7) (C) 2001-2004 Thomas Oestreich, T. Bitterberg 2004-2010 Transcode Team
-
-
-*/
-// Install 
-//
-// $ sudo apt-get install libav-tools
-//
-// https://www.raspberrypi.org/forums/viewtopic.php?t=72435
-// 	$ sudo sh -c 'echo deb http://vontaene.de/raspbian-updates/ . main >> /etc/apt/sources.list'
-// 	$ sudo apt-get install libgstreamer1.0-0 liborc-0.4-0 gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 gstreamer1.0-alsa gstreamer1.0-omx gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-base-apps gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-pulseaudio gstreamer1.0-tools gstreamer1.0-x libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0
-
-/*	This assumes that you've done the following:
-
-	$ echo gpio >/sys/class/leds/led0/trigger
-	$ gpio -g mode 16 output
-*/
 func setRaspberryLed(on bool, state *TimelapseState) {
 	if !state.ledSupported {
 		return
@@ -106,20 +65,6 @@ func timeToLast5Mins(ts time.Time) time.Time {
 
 	return time.Date(ts.Year(), ts.Month(), ts.Day(), ts.Hour(), min - (min % 5), 0, 0, time.UTC)
 }
-
-/*
-func tickEverySecond(tickChan chan int) {
-	for {
-		now := time.Now()
-		nextSec := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second() + 1, 0, time.UTC)
-
-		time.Sleep(nextSec.Sub(now))
-
-		// tickChan <- nextSec.String()
-		tickChan <- TICK_1SEC
-	}
-}
-*/
 
 func makeDirIfNotExists(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
