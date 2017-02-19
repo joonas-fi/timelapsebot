@@ -331,7 +331,7 @@ func takeStill(state *TimelapseState) {
 	args := []string{
 		"raspistill",
 		"-t", "1000",
-		"-w", "1280",
+		"-w", "1280", // the old Pi doesn't seem capable of encoding higher res h264 streams
 		"-h", "960",
 		"-o", state.dirStills + "/" + strconv.Itoa(stillNumber) + ".jpg",
 	}
