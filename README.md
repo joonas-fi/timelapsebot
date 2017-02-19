@@ -23,6 +23,17 @@ Background processes
 Install gstreamer
 -----------------
 
+Gstreamer is required to take advantage of Raspberry's hardware encoding of h264 and decoding of JPEGs.
+
+Otherwise, we could use something else like mencoder or libav.
+
+With software encoding the first-gen Raspberry Pi (that I use for timelapses) would not be able to keep up.
+
+TODO:
+
+- Currently, the hardware encoded quality is abysmal. Find out how to fix it?
+- Use ffmpeg? Does it work on Pi 1? https://ubuntu-mate.community/t/hardware-h264-video-encoding-with-libav-openmax-il/4997
+
 From here https://www.raspberrypi.org/forums/viewtopic.php?t=72435
 
 ```
