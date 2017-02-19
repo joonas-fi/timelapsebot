@@ -79,7 +79,7 @@ type TimelapseState struct {
 	$ echo gpio >/sys/class/leds/led0/trigger
 	$ gpio -g mode 16 output
 */
-func setRaspberryPowerLed(on bool, state *TimelapseState) {
+func setRaspberryLed(on bool, state *TimelapseState) {
 	if !state.ledSupported {
 		return
 	}
@@ -92,7 +92,7 @@ func setRaspberryPowerLed(on bool, state *TimelapseState) {
 
 	exec.Command("gpio", "-g", "write", "16", bitStatus).Start()
 
-	// log.Printf("setRaspberryPowerLed: bit = %s (0 => on, 1 => off)", bitStatus)
+	// log.Printf("setRaspberryLed: bit = %s (0 => on, 1 => off)", bitStatus)
 }
 
 func timeToLast5Mins(ts time.Time) time.Time {
@@ -342,20 +342,20 @@ func takeStill(state *TimelapseState) {
 	argv := args[1:]
 	cmd := exec.Command(args[0], argv...)
 
-	setRaspberryPowerLed(true, state)
+	setRaspberryLed(true, state)
 
 	if output, err := cmd.CombinedOutput(); err != nil {		
 		fmt.Fprintln(os.Stderr, string(output), err)
 		panic(err)
 	}
 
-	setRaspberryPowerLed(false, state)
+	setRaspberryLed(false, state)
 }
 
 func main() {
 	state := restoreState()
 
-	setRaspberryPowerLed(false, &state)
+	setRaspberryLed(false, &state)
 
 	for {
 		now := time.Now()
