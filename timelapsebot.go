@@ -142,20 +142,6 @@ func restoreState() TimelapseState {
 	return state
 }
 
-/*
-$ tree timelapse/
-timelapse/
-___ bucket_5min
-___ bucket_day
-___ bucket_hour
-___ bucket_minute
-___ ___ 1.jpg
-___ ___ 2.jpg
-___ ___ 3.jpg
-
-
-*/
-
 func stillsTo5minBootstrap(state *TimelapseState) {
 	log.Printf("stillsTo5minBootstrap: %s -> %s", state.dirStills, state.dirStillsTemp)
 
@@ -197,9 +183,6 @@ func stillsTo5min(state *TimelapseState) {
 		"!", "avimux", // use mp4mux?
 		"!", "filesink", "location=" + outFile,
 	}
-
-	// avconv -f image2 -i /home/pi/timelapse/bucket_stills_temp/%d.jpg -r 12 -s 1920x1440 /home/pi/timelapse/bucket_5min/foo.mkv
-	// args := []string{"avconv", "-f", "image2", "-i", state.dirStillsTemp + "/%d.jpg", "-r", "12", "-s", "1920x1440", outFile}
 
 	log.Printf("stillsTo5min: invoking %s\n", strings.Join(args, " "))
 
