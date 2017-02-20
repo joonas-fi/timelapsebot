@@ -163,8 +163,8 @@ func stillsTo5minBootstrap(state *TimelapseState) {
 	state.contentsStills = []string{}
 }
 
-func stillsTo5min(state *TimelapseState) {
-	fiveMinVideoFilename := state.headFromState.Format("2006-01-02_15-04.avi")
+func stillsTo5min(headFromState time.Time, state *TimelapseState) {
+	fiveMinVideoFilename := headFromState.Format("2006-01-02_15-04.avi")
 
 	outFile := state.dir5min + "/" + fiveMinVideoFilename
 
@@ -228,8 +228,8 @@ func mergeVideosInternal(files []string, outFile string) {
 	}
 }
 
-func fiveMinsToHour(state *TimelapseState) {
-	hourVideoMerged := state.dirHour + "/" + state.headFromState.Format("2006-01-02_15.avi")
+func fiveMinsToHour(headFromState time.Time, state *TimelapseState) {
+	hourVideoMerged := state.dirHour + "/" + headFromState.Format("2006-01-02_15.avi")
 
 	log.Printf("fiveMinsToHour: %s -> %s", state.dir5min, hourVideoMerged)
 
@@ -240,8 +240,8 @@ func fiveMinsToHour(state *TimelapseState) {
 	state.contentsHours = append(state.contentsHours, hourVideoMerged)
 }
 
-func hoursToDay(state *TimelapseState) {
-	dayVideoMerged := state.dirDaily + "/" + state.headFromState.Format("2006-01-02.avi")
+func hoursToDay(headFromState time.Time, state *TimelapseState) {
+	dayVideoMerged := state.dirDaily + "/" + headFromState.Format("2006-01-02.avi")
 
 	log.Printf("hoursToDay: %s -> %s", state.dirHour, dayVideoMerged)
 
@@ -295,27 +295,27 @@ func main() {
 		differentHour := differentDay || tickCeiledTo5Minutes.Hour() != state.headFromState.Hour()
 		different5Min := !tickCeiledTo5Minutes.Equal(state.headFromState)
 
-		// TODO: have these run concurrently WRT takeStil(), so these periodical chores do not delay takeStill()
+		// these run concurrently WRT takeStill(), so no lagging should be observed
 		if different5Min {
 			stillsTo5minBootstrap(&state)
 
-			runRestConcurrently := func () {
-				stillsTo5min(&state)
+			runRestConcurrently := func (headFromState time.Time) {
+				stillsTo5min(headFromState, &state)
 
 				// different5Min is always true along with differentHour || differentDay
 				
 				if differentHour {
 					// depends on result of stillsTo5min()
-					fiveMinsToHour(&state)
+					fiveMinsToHour(headFromState, &state)
 				}
 
 				if differentDay {
 					// depends on result of fiveMinsToHour()
-					hoursToDay(&state)
+					hoursToDay(headFromState, &state)
 				}
 			}
 
-			go runRestConcurrently()
+			go runRestConcurrently(state.headFromState)
 		}
 
 		takeStill(&state)
