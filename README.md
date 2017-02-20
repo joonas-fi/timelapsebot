@@ -10,6 +10,17 @@ This program also uses concurrency to try to ensure that the stills are taken at
 fixed interval as possible - any background processing is done concurrently.
 
 
+Running
+-------
+
+```
+$ go build timelapsebot.go
+$ nohup ./timelapsebot &
+```
+
+TODO: systemd unit file
+
+
 Background processes
 --------------------
 
